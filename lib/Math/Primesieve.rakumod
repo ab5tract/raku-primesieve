@@ -1,16 +1,10 @@
-use NativeLibs:ver<0.0.8+>:auth<github:salortiz>;
+#use NativeLibs:ver<0.0.8+>:auth<github:salortiz>;
 
-my $Lib;
+use MacOS::NativeLib 'primesieve';
 
-INIT
-{
-    for v9, v8, v7 -> $version
-    {
-        my $lib = $*VM.platform-library-name('primesieve'.IO, :$version);
-        last if $Lib = NativeLibs::Loader.load($lib.basename)
-    }
-    fail "No primesieve library" unless $Lib
-}
+use NativeCall :DEFAULT;
+
+constant LIB = 'primesieve';
 
 constant PRIMESIEVE_ERROR = 18446744073709551615;
 
@@ -33,22 +27,22 @@ class Math::Primesieve::iterator-struct is repr('CStruct')
     has int32 $.is_error;
 
     sub primesieve_init(Math::Primesieve::iterator-struct)
-        is native {*}
+        is native(LIB) {*}
 
     sub primesieve_free_iterator(Math::Primesieve::iterator-struct)
-        is native {*}
+        is native(LIB) {*}
 
     sub primesieve_skipto(Math::Primesieve::iterator-struct, uint64, uint64)
-        is native {*}
+        is native(LIB) {*}
 
     sub primesieve_generate_next_primes(Math::Primesieve::iterator-struct)
-        is native {*}
+        is native(LIB) {*}
 
     sub primesieve_generate_prev_primes(Math::Primesieve::iterator-struct)
-        is native {*}
+        is native(LIB) {*}
 
     sub primesieve_get_max_stop() returns uint64
-        is native {*}
+        is native(LIB) {*}
 
     method init()
     {
@@ -112,64 +106,64 @@ class X::Math::Primesieve is Exception
 
 class Math::Primesieve does Positional
 {
-    sub primesieve_version() returns Str is native {*}
+    sub primesieve_version() returns Str is native(LIB) {*}
 
     sub primesieve_generate_primes(uint64, uint64, size_t is rw, int32)
-        returns Pointer is native {*}
+        returns Pointer is native(LIB) {*}
 
     sub primesieve_generate_n_primes(uint64, uint64, int32)
-        returns Pointer is native {*}
+        returns Pointer is native(LIB) {*}
 
     sub primesieve_nth_prime(int64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_count_primes(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_count_twins(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_count_triplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_count_quadruplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_count_quintuplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_count_sextuplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_print_primes(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_print_twins(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_print_triplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_print_quadruplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_print_quintuplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
     sub primesieve_print_sextuplets(uint64, uint64)
-        returns uint64 is native {*}
+        returns uint64 is native(LIB) {*}
 
-    sub primesieve_get_max_stop() returns uint64 is native {*}
+    sub primesieve_get_max_stop() returns uint64 is native(LIB) {*}
 
-    sub primesieve_get_sieve_size() returns int32 is native {*}
+    sub primesieve_get_sieve_size() returns int32 is native(LIB) {*}
 
-    sub primesieve_get_num_threads() returns int32 is native {*}
+    sub primesieve_get_num_threads() returns int32 is native(LIB) {*}
 
-    sub primesieve_set_sieve_size(int32) is native {*}
+    sub primesieve_set_sieve_size(int32) is native(LIB) {*}
 
-    sub primesieve_set_num_threads(int32) is native {*}
+    sub primesieve_set_num_threads(int32) is native(LIB) {*}
 
-    sub primesieve_free(Pointer) is native {*}
+    sub primesieve_free(Pointer) is native(LIB) {*}
 
     method BUILD(:$num-threads, :$sieve-size)
     {
